@@ -1,0 +1,33 @@
+---
+name: CheckAction
+
+# Triggers the workflow on push
+on: [push]
+
+# Runs Unit Tests and Linting
+jobs:
+  test-lint:
+    name: Run tests and Lint
+    runs-on: ubuntu-20.04
+    steps:
+
+      # Logs into Docker Hub with credentials
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # Checks out the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Runs the Unit Tests
+      - name: Test
+        run: docker-compose run --rm app sh -c "python manage.py test"
+
+      # Runs the Linting (flake8)
+      - name: Lint
+        run: docker-compose run --rm app sh -c "flake8"
+
+      
