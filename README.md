@@ -1,3 +1,3 @@
 # RESTful-Recipes-API
 
-Hello! This project is still a work-in-progress. Check back in a day or two
+Hello! This project is still a work-in-progress. The Project will be live by 19/12/2023. Please check back then!
