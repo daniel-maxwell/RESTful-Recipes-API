@@ -44,6 +44,7 @@ class UserManager(BaseUserManager):
 
         return usr
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system."""
     email = models.EmailField(max_length=255, unique=True)  # Email (unique)
