@@ -29,7 +29,6 @@ class UserManager(BaseUserManager):
 
         return usr
 
-
     def create_superuser(self, email, password):
         """Create, save, and return a new superuser."""
 
@@ -44,7 +43,6 @@ class UserManager(BaseUserManager):
         usr.save()
 
         return usr
-
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system."""

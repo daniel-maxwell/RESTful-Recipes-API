@@ -17,19 +17,18 @@ class AdminSiteTests(TestCase):
 
         # Create admin user
         self.admin_user = user_model().objects.create_superuser(
-            email = 'admin@test.com',
-            password = 'testpassword1234'
+            email='admin@test.com',
+            password='testpassword1234'
         )
         # Log in admin user
         self.client.force_login(self.admin_user)
 
         # Create a regular user
-        self.user = user_model().objects.create_user(
-            email = 'user@test.com',
-            password = 'testpassword1234',
-            name = 'Test User'
+        self.user=user_model().objects.create_user(
+            email='user@test.com',
+            password='testpassword1234',
+            name='Test User'
         )
-
 
     def test_create_user_page(self):
         """Test that the create user page functions correctly"""
@@ -42,7 +41,6 @@ class AdminSiteTests(TestCase):
 
         # Check that the HTTP response is OK (200)
         self.assertEqual(res.status_code, 200)
-
 
     def test_users_list(self):
         """Test that users are listed on user page"""
@@ -57,7 +55,6 @@ class AdminSiteTests(TestCase):
         self.assertContains(res, self.user.name)
         self.assertContains(res, self.user.email)
 
-
     def test_edit_user_page(self):
         """Test that the edit user page functions correctly"""
 
@@ -69,4 +66,3 @@ class AdminSiteTests(TestCase):
 
         # Check that the HTTP response is OK (200)
         self.assertEqual(res.status_code, 200)
-        
