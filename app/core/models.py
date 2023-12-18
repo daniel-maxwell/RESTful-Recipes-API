@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system."""
-    email = models.EmailField(max_length=255, unique=True)  # Email (must be unique)
+    email = models.EmailField(max_length=255, unique=True)  # Email (unique)
     name = models.CharField(max_length=25)  # Name of user
     is_active = models.BooleanField(default=True)  # Default is True
     is_staff = models.BooleanField(default=False)  # Default is False
