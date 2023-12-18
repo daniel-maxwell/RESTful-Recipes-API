@@ -23,6 +23,7 @@ class ModelTests(TestCase):
         self.assertEqual(usr.email, email)  # Check if email is correct
         self.assertTrue(usr.check_password(pw))  # Check if password is correct
 
+
     def test_new_user_email_normalized(self):
         """Test the email for a new user is normalized"""
 
@@ -32,6 +33,25 @@ class ModelTests(TestCase):
             ['TestEmail2@Test.com', 'TestEmail2@test.com'],
         ]
 
+        # Iterate though sample emails, check that each email is normalized
         for testEmail, expectedEmail in sample_emails:
             usr = user_model().objects.create_user(testEmail, 'test1234')
             self.assertEqual(usr.email, expectedEmail)
+
+
+    def test_new_user_missing_email_raises_error(self):
+        """Test creating user with no email raises an error"""
+
+        # Ensure that creating a user with no email raises a ValueError
+        with self.assertRaises(ValueError):
+            user_model().objects.create_user('', 'password1234')
+
+
+    def test_create_new_superuser(self):
+        """Test creating a new superuser"""
+        usr = user_model().objects.create_superuser(
+            'testemail@test.com',
+            'password1234'
+        )
+        self.assertTrue(usr.is_superuser)
+        self.assertTrue(usr.is_staff)
