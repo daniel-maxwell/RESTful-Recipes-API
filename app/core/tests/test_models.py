@@ -11,8 +11,8 @@ class ModelTests(TestCase):
     def test_create_user_with_email_was_successful(self):
         """Test create user with email is successful"""
 
-        email = 'email@test.com'    # Valid dummy email
-        pw = 'testpassword1234'     # Valid dummy password
+        email = 'email@test.com'  # Valid dummy email
+        pw = 'testpassword1234'  # Valid dummy password
 
         # Create a user with dummy email and password
         usr = user_model().objects.create_user(
@@ -20,8 +20,8 @@ class ModelTests(TestCase):
             password=pw,
         )
 
-        self.assertEqual(usr.email, email)      # Check if email is correct
-        self.assertTrue(usr.check_password(pw))     # Check if password is correct
+        self.assertEqual(usr.email, email)  # Check if email is correct
+        self.assertTrue(usr.check_password(pw))  # Check if password is correct
 
     def test_new_user_email_normalized(self):
         """Test the email for a new user is normalized"""
