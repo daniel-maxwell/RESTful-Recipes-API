@@ -40,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+
 class AuthTokenSerializer(serializers.Serializer):
     """Serializer for the User Authentication token"""
 
@@ -64,9 +65,11 @@ class AuthTokenSerializer(serializers.Serializer):
             password=password,
         )
 
-        # If the authentication fails, raise an error (translates to 400 Bad Request)
+        # If the auth fails, raise an error (400 Bad Request)
         if not user:
-            msg = _('System was not able to authenticate with the credentials provided')
+            msg = _(
+                "System couldn't authenticate with the credentials provided"
+            )
             raise serializers.ValidationError(msg, code='authorization')
 
         # Set the user attribute so that it can be accessed in the view
