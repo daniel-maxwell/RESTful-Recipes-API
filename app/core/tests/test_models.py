@@ -91,7 +91,7 @@ class ModelTests(TestCase):
         """Test creating a tag"""
 
         # Create a user
-        user=create_user()
+        user = create_user()
 
         # Create a tag and assign it to the user
         tag = models.Tag.objects.create(
