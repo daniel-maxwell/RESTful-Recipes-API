@@ -2,7 +2,7 @@
 Unit Test Suite for the Recipe APIs.
 """
 from core.models import Recipe
-from recipe.serializers import(
+from recipe.serializers import (
     RecipeSerializer,
     RecipeDetailSerializer,
 )
@@ -18,9 +18,11 @@ from decimal import Decimal
 
 RECIPES_URL = reverse('recipe:recipe-list')
 
+
 def detail_url(recipe_id):
     """Return the URL for a recipe detail"""
     return reverse('recipe:recipe-detail', args=[recipe_id])
+
 
 def create_recipe(**params):
     """Create a test recipe and return it"""
@@ -41,9 +43,11 @@ def create_recipe(**params):
     recipe = Recipe.objects.create(**defaults)
     return recipe
 
+
 def create_user(**params):
     """Create a test user and return it"""
     return user_model().objects.create_user(**params)
+
 
 class PublicRecipeApiTests(TestCase):
     """Test the publicly available Recipe API features"""
