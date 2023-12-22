@@ -1,5 +1,5 @@
 """
-Tests for Django admin modifications
+Django Admin Test Suite for the core app.
 """
 
 from django.test import TestCase, Client

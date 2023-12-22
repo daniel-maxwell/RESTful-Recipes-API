@@ -1,8 +1,14 @@
 """
-Unit Test Suite for Django Models.
+Django Models Unit Test Suite for the core app.
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model as user_model
+from decimal import Decimal
+from core import models
+
+def create_user(email="TestEmail@test.com", password="TestPassword"):
+    """Create a test user and return it"""
+    return user_model().objects.create_user(email, password)
 
 
 class ModelTests(TestCase):
@@ -52,3 +58,24 @@ class ModelTests(TestCase):
         )
         self.assertTrue(usr.is_superuser)
         self.assertTrue(usr.is_staff)
+
+    def test_create_recipe(self):
+        """Test creating a recipe"""
+
+        # Create a user
+        user=user_model().objects.create_user(
+            'TestEmail@Test.com',
+            'TestPassword'
+        )
+
+        # Create a recipe
+        recipe=models.Recipe.objects.create(
+            user=user,
+            title='Test Recipe',
+            time_minutes=5,
+            price=Decimal('10.00'),
+            description='Test Description'
+        )
+
+        # Check that the recipe was created
+        self.assertEqual(str(recipe), recipe.title)

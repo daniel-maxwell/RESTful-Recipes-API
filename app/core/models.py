@@ -7,6 +7,7 @@ from django.contrib.auth.models import (AbstractBaseUser,
                                         BaseUserManager,
                                         PermissionsMixin
                                         )
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -53,5 +54,28 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)  # Default is False
 
     objects = UserManager()  # User manager for user model
-
     USERNAME_FIELD = 'email'  # Username is email address
+
+
+class Recipe(models.Model):
+    """The Recipe model."""
+
+    # User that created the recipe
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    # Title of the recipe
+    title = models.CharField(max_length=255)
+    # Description of the recipe
+    description = models.TextField()
+    # Time to prepare the recipe (in minutes)
+    time_minutes = models.IntegerField()
+    # Price of the recipe
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    # Link to the recipe
+    link = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        """Returns the string representation of the recipe."""
+        return self.title
