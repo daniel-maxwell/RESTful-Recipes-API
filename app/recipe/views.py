@@ -2,10 +2,10 @@
 Views for the Recipe API
 """
 
-from core.models import Recipe
+from core.models import Recipe, Tag
 from recipe import serializers
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -21,7 +21,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Return recipes for the authenticated user only"""
         return self.queryset.filter(
             user=self.request.user
-        ).order_by('-id')
+        ).order_by('-id')  # Order by id (most recent first)
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
@@ -32,4 +32,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new recipe"""
+        serializer.save(user=self.request.user)
+
+
+class TagViewSet(viewsets.GenericViewSet,
+                 mixins.CreateModelMixin,
+                 mixins.ListModelMixin,
+                 mixins.UpdateModelMixin,
+                 mixins.DestroyModelMixin):
+    """Viewset for managing the Tag model"""
+    serializer_class = serializers.TagSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = Tag.objects.all()
+
+    def get_queryset(self):
+        """Return tags for the authenticated user only"""
+        return self.queryset.filter(
+            user=self.request.user
+        ).order_by('-name')  # Order by name in descending order
+
+    def perform_create(self, serializer):
+        """Create a new tag"""
         serializer.save(user=self.request.user)

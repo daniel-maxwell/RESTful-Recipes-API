@@ -52,7 +52,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=25)  # Name of user
     is_active = models.BooleanField(default=True)  # Default is True
     is_staff = models.BooleanField(default=False)  # Default is False
-
     objects = UserManager()  # User manager for user model
     USERNAME_FIELD = 'email'  # Username is email address
 
@@ -65,17 +64,12 @@ class Recipe(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    # Title of the recipe
+    # Title, description, prep time, price, link and associated tags
     title = models.CharField(max_length=255)
-    # Description of the recipe
     description = models.TextField()
-    # Time to prepare the recipe (in minutes)
     time_minutes = models.IntegerField()
-    # Price of the recipe
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    # Link to the recipe
     link = models.CharField(max_length=255, blank=True)
-    # Tags for the recipe
     tags = models.ManyToManyField('Tag')
 
     def __str__(self):
