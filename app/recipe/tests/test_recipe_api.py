@@ -25,6 +25,7 @@ def detail_url(recipe_id):
     """Return the URL for a recipe detail"""
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
+
 def create_test_recipe(**params):
     """Create a test recipe and return it"""
 
@@ -44,9 +45,11 @@ def create_test_recipe(**params):
     recipe = Recipe.objects.create(**defaults)
     return recipe
 
+
 def create_test_tag(user, name='Test Tag'):
     """Create a test tag and return it"""
     return Tag.objects.create(user=user, name=name)
+
 
 def create_user(**params):
     """Create a test user and return it"""
@@ -305,13 +308,10 @@ class PrivateRecipeApiTests(TestCase):
         # Create a recipe
         recipe = create_test_recipe(user=self.user)
 
-        # Create a tag
-        tag = create_test_tag(user=self.user, name='Test Tag')
-
         # Generate the URL for the recipe detail
         url = detail_url(recipe.id)
 
-        # Define the recipe update payload
+        # Define the recipe update payload (with new tag)
         payload = {'tags': [{'name': 'Test Tag'}]}
 
         # Perform HTTP PATCH on the recipe detail URL

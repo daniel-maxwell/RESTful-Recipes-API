@@ -20,9 +20,11 @@ def create_user(email='TestEmail@test.com', password='TestPassword'):
     """Create a test user and return it"""
     return user_model().objects.create_user(email, password)
 
+
 def tag_detail_url(tag_id):
     """Return the URL for a tag detail"""
     return reverse('recipe:tag-detail', args=[tag_id])
+
 
 class PublicTagsApiTests(TestCase):
     """Test the publicly available Tags API"""
