@@ -18,6 +18,7 @@ class ModelTests(TestCase):
     def test_create_user_with_email_was_successful(self):
         """Test create user with email is successful"""
 
+        # Create a dummy email and password
         email = 'email@test.com'  # Valid dummy email
         pw = 'testpassword1234'  # Valid dummy password
 
@@ -27,8 +28,11 @@ class ModelTests(TestCase):
             password=pw,
         )
 
-        self.assertEqual(usr.email, email)  # Check if email is correct
-        self.assertTrue(usr.check_password(pw))  # Check if password is correct
+        # Check that email is correct
+        self.assertEqual(usr.email, email)
+
+        # Check that password is correct
+        self.assertTrue(usr.check_password(pw))
 
     def test_new_user_email_normalized(self):
         """Test the email for a new user is normalized"""
@@ -86,6 +90,20 @@ class ModelTests(TestCase):
 
         # Check that the recipe was created
         self.assertEqual(str(recipe), recipe.title)
+
+    def test_create_ingredient(self):
+        """Test creating an ingredient"""
+        # Create a user
+        usr = create_user()
+
+        # Create an ingredient
+        ingredient = models.Ingredient.objects.create(
+            user=usr,
+            name='Test Ingredient 1'
+        )
+
+        # Check that the ingredient was created
+        self.assertEqual(str(ingredient), ingredient.name)
 
     def test_create_tag(self):
         """Test creating a tag"""

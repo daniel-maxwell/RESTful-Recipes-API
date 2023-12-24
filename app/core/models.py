@@ -70,11 +70,29 @@ class Recipe(models.Model):
     time_minutes = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
     link = models.CharField(max_length=255, blank=True)
+    ingredients = models.ManyToManyField('Ingredient')
     tags = models.ManyToManyField('Tag')
 
     def __str__(self):
         """Returns the string representation of the recipe."""
         return self.title
+
+
+class Ingredient(models.Model):
+    """The Ingredient model."""
+
+    # User that created the ingredient
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    # Name of the ingredient
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        """Returns the string representation of the ingredient."""
+        return self.name
 
 
 class Tag(models.Model):

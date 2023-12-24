@@ -1,7 +1,7 @@
 """
 Unit Test Suite for the Recipe APIs.
 """
-from core.models import Recipe, Tag
+from core.models import Recipe, Ingredient, Tag
 from recipe.serializers import (
     RecipeSerializer,
     RecipeDetailSerializer,
@@ -19,11 +19,6 @@ import json
 from decimal import Decimal
 
 RECIPES_URL = reverse('recipe:recipe-list')
-
-
-def detail_url(recipe_id):
-    """Return the URL for a recipe detail"""
-    return reverse('recipe:recipe-detail', args=[recipe_id])
 
 
 def create_test_recipe(**params):
@@ -44,6 +39,11 @@ def create_test_recipe(**params):
     # Create and return the recipe
     recipe = Recipe.objects.create(**defaults)
     return recipe
+
+
+def recipe_detail_url(recipe_id):
+    """Returns the URL for a recipe detail"""
+    return reverse('recipe:recipe-detail', args=[recipe_id])
 
 
 def create_test_tag(user, name='Test Tag'):
@@ -98,7 +98,7 @@ class PrivateRecipeApiTests(TestCase):
             'price': str(Decimal('15.10')),
             'description': 'Test Description',
             'link': 'http://www.test.com/recipe.pdf',
-            'tags': [{'name': 'Test Tag'}]  # Add this line
+            'tags': [{'name': 'Test Tag'}]
         }
 
         # Encode payload as JSON and POST to the Recipes URL
@@ -118,7 +118,146 @@ class PrivateRecipeApiTests(TestCase):
         for key in payload.keys() - {'tags'}:
             self.assertEqual(str(getattr(recipe, key)), str(payload[key]))
 
-    def test_create_recipe_with_tags(self):
+    def create_dummy_recipe_and_new_ingredients(self):
+        """Test creating a dummy recipe with ingredients"""
+
+        # Define a recipe payload
+        payload = {
+            'title': 'Test Recipe',
+            'time_minutes': 15,
+            'price': 5.00,
+            'ingredients': [
+                {'name': 'Test Ingredient 1'},
+                {'name': 'Test Ingredient 2'}
+            ],
+            'description': 'Test Description',
+            'link': 'http://www.test.com/recipe.pdf',
+        }
+
+        # Encode payload as JSON and POST to the Recipes URL
+        res = self.client.post(
+            RECIPES_URL,
+            json.dumps(payload),
+            content_type='application/json'
+        )
+
+        # Check the response is 201 (Created)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # Retrieve all recipes associated with the user
+        recipes = Recipe.objects.filter(user=self.user)
+
+        # Check there is only one recipe associated with the user
+        self.assertEqual(recipes.count(), 1)
+
+        # Get the recipe that was created
+        recipe = recipes[0]
+
+        # Check the recipe has the correct number of ingredients
+        self.assertEqual(recipe.ingredients.count(), 2)
+
+        # Check the recipe has the correct ingredients
+        for ingredient in payload['ingredients']:
+            self.assertTrue(
+                Ingredient.objects.filter(
+                    user=self.user,
+                    name=ingredient['name']
+                ).exists()
+            )
+
+    def test_create_dummy_recipe_with_existing_ingredients(self):
+        """Test creating a dummy recipe with existing ingredients"""
+
+        # Create a dummy ingredient
+        ingredient = Ingredient.objects.create(
+            user=self.user,
+            name='Test Ingredient 1'
+        )
+
+        # Define a recipe payload
+        payload = {
+            'title': 'Test Recipe',
+            'time_minutes': 15,
+            'price': 5.00,
+            'ingredients': [
+                {'name': 'Test Ingredient 1'},
+                {'name': 'Test Ingredient 2'}
+            ],
+            'description': 'Test Description',
+            'link': 'http://www.test.com/recipe.pdf',
+        }
+
+        # Encode payload as JSON and POST to the Recipes URL
+        res = self.client.post(
+            RECIPES_URL,
+            json.dumps(payload),
+            content_type='application/json'
+        )
+
+        # Check the response is 201 (Created)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # Retrieve all recipes associated with the user
+        recipes = Recipe.objects.filter(user=self.user)
+
+        # Check there is only one recipe associated with the user
+        self.assertEqual(recipes.count(), 1)
+
+        # Get the recipe that was created
+        recipe = recipes[0]
+
+        # Check the recipe has the correct number of ingredients
+        self.assertEqual(recipe.ingredients.count(), 2)
+
+        # Retrieve the ingredients associated with the recipe
+        ingredients = recipe.ingredients.all()
+
+        # Check the recipe has the correct ingredients
+        ingredient_names = [ingredient.name for ingredient in ingredients]
+        self.assertIn('Test Ingredient 1', ingredient_names)
+        self.assertIn('Test Ingredient 2', ingredient_names)
+
+    def test_create_dummy_recipe_and_new_tags(self):
+        """Test creating a recipe with new tags"""
+
+        # Define recipe payload with tags
+        payload = {
+            'title': 'Test Title',
+            'tags': [
+                {'name': 'Test Tag 1'},
+                {'name': 'Test Tag 2'},
+            ],
+            'time_minutes': 60,
+            'description': 'Test Description',
+            'price': 20.00
+        }
+
+        # Encode payload as JSON and POST to the Recipes URL
+        res = self.client.post(
+            RECIPES_URL,
+            json.dumps(payload, cls=DjangoJSONEncoder),
+            content_type='application/json'
+        )
+
+        # Check the response is 201 (Created)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # Retrieve the recipe from the database
+        recipe = Recipe.objects.get(id=res.data['id'])
+
+        # Retrieve the tags associated with the recipe
+        tags = recipe.tags.all()
+
+        # Check the recipe has the correct number of tags
+        self.assertEqual(tags.count(), 2)
+
+        # Check the recipe has the correct tags
+        tag_names = [tag.name for tag in tags]
+        self.assertIn('Test Tag 1', tag_names)
+        self.assertIn('Test Tag 2', tag_names)
+
+
+    def test_create_dummy_recipe_with_existing_tags(self):
         """Test creating a recipe with existing tags"""
         # Define recipe payload with tags
         payload = {
@@ -163,7 +302,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe = create_test_recipe(user=self.user)
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Use test client to perform HTTP GET on the recipe detail URL
         res = self.client.get(url)
@@ -242,7 +381,7 @@ class PrivateRecipeApiTests(TestCase):
         payload = {'title': 'New Test Recipe Title'}
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Perform HTTP PATCH on the recipe detail URL
         res = self.client.patch(url, payload)
@@ -285,7 +424,7 @@ class PrivateRecipeApiTests(TestCase):
         }
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Perform HTTP PUT on the recipe detail URL
         res = self.client.put(url, payload)
@@ -303,13 +442,106 @@ class PrivateRecipeApiTests(TestCase):
         # Check the recipe was NOT updated with a new user
         self.assertEqual(recipe.user, self.user)
 
+    def test_create_ingredient_when_updating_recipe(self):
+        """Test ingredient creation when recipes are updated"""
+
+        # Create a recipe
+        recipe = create_test_recipe(user=self.user)
+
+        # Define the recipe update payload (with new ingredient)
+        payload = {'ingredients': [{'name': 'Test Ingredient'}]}
+
+        # Perform HTTP PATCH on the recipe detail URL
+        res = self.client.patch(
+            recipe_detail_url(recipe.id),
+            json.dumps(payload, cls=DjangoJSONEncoder),
+            content_type='application/json'
+        )
+
+        # Check the response is 200 (OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # GET the ingredient from the database
+        new_ingredient = Ingredient.objects.get(name='Test Ingredient')
+
+        # Check the ingredient was created and is associated with the recipe
+        self.assertIn(new_ingredient, recipe.ingredients.all())
+
+    def test_assign_ingredient_when_updating_recipe(self):
+        """Test assignment of an existing ingredient when recipes are updated"""
+
+        # Create a test ingredient
+        old_ingredient = Ingredient.objects.create(
+            user=self.user,
+            name='Old Ingredient'
+        )
+
+        # Create a test recipe
+        recipe = create_test_recipe(user=self.user)
+
+        # Assign the test ingredient to the test recipe
+        recipe.ingredients.add(old_ingredient)
+
+        # Define the recipe update payload (with new ingredient)
+        payload = {'ingredients': [{'name': 'New Ingredient'}]}
+
+        # Perform HTTP PATCH on the recipe detail URL
+        res = self.client.patch(
+            recipe_detail_url(recipe.id),
+            json.dumps(payload, cls=DjangoJSONEncoder),
+            content_type='application/json'
+        )
+
+        # Check the response is 200 (OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Refresh the recipe to get updated data
+        recipe.refresh_from_db()
+
+        # Check the old ingredient is no longer associated with the recipe
+        self.assertNotIn(old_ingredient, recipe.ingredients.all())
+
+        # Check the new ingredient is associated with the recipe
+        ingredient_names = [ingredient.name for ingredient in recipe.ingredients.all()]
+        self.assertIn('New Ingredient', ingredient_names)
+
+    def test_update_recipe_delete_ingredients(self):
+        """Test deleting assigned ingredients from a recipe"""
+
+        # Create a recipe
+        recipe = create_test_recipe(user=self.user)
+
+        # Create an ingredient
+        ingredient = Ingredient.objects.create(
+            user=self.user,
+            name='Test Ingredient'
+        )
+
+        # Assign the ingredient to the recipe
+        recipe.ingredients.add(ingredient)
+
+        # Define the recipe update payload (no ingredients)
+        payload = {'ingredients': []}
+
+        # Perform HTTP PATCH, providing updated recipe update payload
+        res = self.client.patch(
+            recipe_detail_url(recipe.id),
+            payload,
+            format='json')
+
+        # Check the response is 200 (OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Check ingredients were cleared from the recipe
+        self.assertEqual(recipe.ingredients.count(), 0)
+
     def test_create_tag_when_updating_recipe(self):
         """Test tag creation when recipes are updated"""
         # Create a recipe
         recipe = create_test_recipe(user=self.user)
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Define the recipe update payload (with new tag)
         payload = {'tags': [{'name': 'Test Tag'}]}
@@ -343,7 +575,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe.tags.add(old_tag)
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Define the recipe update payload (with new tag)
         payload = {'tags': [{'name': 'New Test Tag'}]}
@@ -381,7 +613,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe.tags.add(tag)
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Define the recipe update payload (no tags)
         payload = {'tags': []}
@@ -402,7 +634,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe = create_test_recipe(user=self.user)
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Perform HTTP DELETE on the recipe detail URL
         res = self.client.delete(url)
@@ -426,7 +658,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe = create_test_recipe(user=new_user)
 
         # Generate the URL for the recipe detail
-        url = detail_url(recipe.id)
+        url = recipe_detail_url(recipe.id)
 
         # Perform HTTP DELETE on the recipe detail URL
         res = self.client.delete(url)

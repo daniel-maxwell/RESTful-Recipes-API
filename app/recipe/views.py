@@ -2,7 +2,7 @@
 Views for the Recipe API
 """
 
-from core.models import Recipe, Tag
+from core.models import Recipe, Ingredient, Tag
 from recipe import serializers
 
 from rest_framework import viewsets, mixins
@@ -32,6 +32,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new recipe"""
+        serializer.save(user=self.request.user)
+
+
+class IngredientViewSet(viewsets.GenericViewSet,
+                        mixins.CreateModelMixin,
+                        mixins.ListModelMixin,
+                        mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin):
+    """Viewset for managing the Ingredient model"""
+    serializer_class = serializers.IngredientSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = Ingredient.objects.all()
+
+    def get_queryset(self):
+        """Return ingredients for the authenticated user only"""
+        return self.queryset.filter(
+            user=self.request.user
+        ).order_by('-name')  # Order by name in descending order
+
+    def perform_create(self, serializer):
+        """Create a new ingredient"""
         serializer.save(user=self.request.user)
 
 
