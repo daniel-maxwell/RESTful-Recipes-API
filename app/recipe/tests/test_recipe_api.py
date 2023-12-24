@@ -168,12 +168,6 @@ class PrivateRecipeApiTests(TestCase):
     def test_create_dummy_recipe_with_existing_ingredients(self):
         """Test creating a dummy recipe with existing ingredients"""
 
-        # Create a dummy ingredient
-        ingredient = Ingredient.objects.create(
-            user=self.user,
-            name='Test Ingredient 1'
-        )
-
         # Define a recipe payload
         payload = {
             'title': 'Test Recipe',
@@ -255,7 +249,6 @@ class PrivateRecipeApiTests(TestCase):
         tag_names = [tag.name for tag in tags]
         self.assertIn('Test Tag 1', tag_names)
         self.assertIn('Test Tag 2', tag_names)
-
 
     def test_create_dummy_recipe_with_existing_tags(self):
         """Test creating a recipe with existing tags"""
@@ -468,7 +461,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertIn(new_ingredient, recipe.ingredients.all())
 
     def test_assign_ingredient_when_updating_recipe(self):
-        """Test assignment of an existing ingredient when recipes are updated"""
+        """Test assignment of existing ingredient when recipes are updated"""
 
         # Create a test ingredient
         old_ingredient = Ingredient.objects.create(
@@ -502,7 +495,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertNotIn(old_ingredient, recipe.ingredients.all())
 
         # Check the new ingredient is associated with the recipe
-        ingredient_names = [ingredient.name for ingredient in recipe.ingredients.all()]
+        ingredient_names = [ing.name for ing in recipe.ingredients.all()]
         self.assertIn('New Ingredient', ingredient_names)
 
     def test_update_recipe_delete_ingredients(self):

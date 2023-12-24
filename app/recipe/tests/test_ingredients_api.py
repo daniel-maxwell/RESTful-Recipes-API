@@ -18,6 +18,7 @@ def create_user(email='TestEmail@test.com', password='TestPassword'):
     """Create a test user and return it"""
     return user_model().objects.create_user(email, password)
 
+
 def ingredient_detail_url(ingredient_id):
     """Returns the URL for an ingredient detail"""
     return reverse('recipe:ingredient-detail', args=[ingredient_id])
@@ -97,7 +98,6 @@ class PrivateIngredientsApiTests(TestCase):
 
         # Check that the returned ingredient is the correct one
         self.assertEqual(res.data[0]['name'], ingredient.name)
-
 
     def test_update_ingredient_successful(self):
         """Test updating an ingredient is successful"""
