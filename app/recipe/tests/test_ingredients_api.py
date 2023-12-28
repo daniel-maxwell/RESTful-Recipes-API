@@ -1,7 +1,7 @@
 """
 Unit Test Suite for the Ingredients API
 """
-from core.models import Ingredient
+from core.models import Recipe, Ingredient
 from recipe.serializers import IngredientSerializer
 
 from rest_framework import status
@@ -10,6 +10,8 @@ from rest_framework.test import APIClient
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model as user_model
+
+from decimal import Decimal
 
 INGREDIENTS_URL = reverse('recipe:ingredient-list')
 
@@ -98,6 +100,85 @@ class PrivateIngredientsApiTests(TestCase):
 
         # Check that the returned ingredient is the correct one
         self.assertEqual(res.data[0]['name'], ingredient.name)
+
+    def test_filter_ingredients_to_only_assigned(self):
+        """Test filtering ingredients to only those assigned to recipes"""
+        # Create a test recipe
+        new_recipe = Recipe.objects.create(
+            user=self.user,
+            title='Greek Salad',
+            time_minutes=10,
+            price=Decimal('5.00')
+        )
+        # Create two test ingredients
+        ingredient_1 = Ingredient.objects.create(
+            user=self.user,
+            name='Feta Cheese'
+        )
+        ingredient_2 = Ingredient.objects.create(
+            user=self.user,
+            name='Creme Fraiche'
+        )
+        # Only assign ingredient_1 to the recipe
+        new_recipe.ingredients.add(ingredient_1)
+
+        # Retrieve ingredients (GET request)
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+
+        # Serialize the ingredients
+        serializer_1 = IngredientSerializer(ingredient_1)
+        serializer_2 = IngredientSerializer(ingredient_2)
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Check ingredient_1 is in the response data
+        self.assertIn(serializer_1.data, res.data)
+
+        # Check ingredient_2 is not in the response data
+        self.assertNotIn(serializer_2.data, res.data)
+
+    def test_filter_ingredients_no_duplicates(self):
+        """Test filtering ingredients does not return duplicates"""
+
+        # Create an ingredient to be assigned to two recipes
+        ingredient = Ingredient.objects.create(
+            user=self.user,
+            name='Vegan Cheese'
+        )
+
+        # Create an ingredient which will not be assigned
+        Ingredient.objects.create(
+            user=self.user,
+            name='Edamame Beans'
+        )
+
+        # Create two recipes
+        new_recipe_1 = Recipe.objects.create(
+            user=self.user,
+            title='Vegan Pizza',
+            time_minutes=20,
+            price=Decimal('15.00')
+        )
+        new_recipe_2 = Recipe.objects.create(
+            user=self.user,
+            title='Vegan Pasta',
+            time_minutes=10,
+            price=Decimal('5.00')
+        )
+
+        # Assign the ingredient to both recipes
+        new_recipe_1.ingredients.add(ingredient)
+        new_recipe_2.ingredients.add(ingredient)
+
+        # Retrieve ingredients (GET request)
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Check that only one ingredient is returned
+        self.assertEqual(len(res.data), 1)
 
     def test_update_ingredient_successful(self):
         """Test updating an ingredient is successful"""

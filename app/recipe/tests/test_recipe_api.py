@@ -359,6 +359,58 @@ class PrivateRecipeApiTests(TestCase):
         # Check the response data matches the serialized data
         self.assertEqual(res.data, serializer.data)
 
+    def test_filter_recipes_by_ingredients(self):
+        recipe_1 = create_test_recipe(user=self.user, title="Pea Soup")
+        recipe_2 = create_test_recipe(user=self.user, title="Brushetta")
+        recipe_3 = create_test_recipe(user=self.user, title="Lasagna")
+
+        ingredient_1 = Ingredient.objects.create(
+            user=self.user,
+            name='Peas'
+        )
+        ingredient_2 = Ingredient.objects.create(
+            user=self.user,
+            name='Tomatoes'
+        )
+
+        recipe_1.ingredients.add(ingredient_1)
+        recipe_2.ingredients.add(ingredient_2)
+
+        params = {'ingredients': f'{ingredient_1.id},{ingredient_2.id}'}
+
+        res = self.client.get(RECIPES_URL, params)
+
+        serializer_1 = RecipeSerializer(recipe_1)
+        serializer_2 = RecipeSerializer(recipe_2)
+        serializer_3 = RecipeSerializer(recipe_3)
+
+        self.assertIn(serializer_1.data, res.data)
+        self.assertIn(serializer_2.data, res.data)
+        self.assertNotIn(serializer_3.data, res.data)
+
+    def test_filter_recipes_by_tags(self):
+        recipe_1 = create_test_recipe(user=self.user, title="Pea Soup")
+        recipe_2 = create_test_recipe(user=self.user, title="Brushetta")
+        recipe_3 = create_test_recipe(user=self.user, title="Lasagna")
+
+        tag_1 = create_test_tag(user=self.user, name="Vegan")
+        tag_2 = create_test_tag(user=self.user, name="Quick and Easy")
+
+        recipe_1.tags.add(tag_1)
+        recipe_2.tags.add(tag_2)
+
+        params = {'tags': f'{tag_1.id},{tag_2.id}'}
+
+        res = self.client.get(RECIPES_URL, params)
+
+        serializer_1 = RecipeSerializer(recipe_1)
+        serializer_2 = RecipeSerializer(recipe_2)
+        serializer_3 = RecipeSerializer(recipe_3)
+
+        self.assertIn(serializer_1.data, res.data)
+        self.assertIn(serializer_2.data, res.data)
+        self.assertNotIn(serializer_3.data, res.data)
+
     def test_partial_update_recipe(self):
         """Test partially updating a recipe (PATCH)"""
         original_url = 'http://www.test.com/recipe.pdf'

@@ -1,6 +1,9 @@
 """
 Unit Test Suite for the Tags API
 """
+from core.models import Recipe, Tag
+from recipe.serializers import TagSerializer
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model as user_model
@@ -8,9 +11,7 @@ from django.contrib.auth import get_user_model as user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Tag
-
-from recipe.serializers import TagSerializer
+from decimal import Decimal
 
 
 TAGS_URL = reverse('recipe:tag-list')
@@ -103,6 +104,71 @@ class PrivateTagsApiTests(TestCase):
 
         # Check response data contains the authenticated user's tag id
         self.assertEqual(res.data[0]['id'], tag.id)
+
+    def test_filter_tags_to_only_assigned(self):
+        """Test filtering tags to only those assigned to recipes"""
+
+        # Create a test recipe
+        new_recipe = Recipe.objects.create(
+            user=self.user,
+            title='Sushi',
+            time_minutes=10,
+            price=Decimal('5.00')
+        )
+
+        # Create sample tags
+        tag_1 = Tag.objects.create(user=self.user, name='Low Carb')
+        tag_2 = Tag.objects.create(user=self.user, name='Vegetarian')
+
+        # Assign tags to the test recipe
+        new_recipe.tags.add(tag_1)
+
+        # Attempt to get tags
+        res = self.client.get(TAGS_URL, {'assigned_only': 1})
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Check that only one tag is returned
+        self.assertEqual(len(res.data), 1)
+
+        # Check that the returned tag is the correct one
+        self.assertEqual(res.data[0]['name'], tag_1.name)
+
+    def test_filter_tags_no_duplicates(self):
+        """Test that filtered tags do not contain duplicates"""
+
+        # Create two test recipes
+        test_recipe_1 = Recipe.objects.create(
+            user=self.user,
+            title='Korean Chicken',
+            time_minutes=10,
+            price=Decimal('9.00')
+        )
+        test_recipe_2 = Recipe.objects.create(
+            user=self.user,
+            title='Pizza',
+            time_minutes=15,
+            price=Decimal('12.00')
+        )
+
+
+        # Create two tags, saving one to a variable
+        tag = Tag.objects.create(user=self.user, name='Quick and Easy')
+        Tag.objects.create(user=self.user, name='Vegetarian')
+
+        # Assign first tag to the test recipes
+        test_recipe_1.tags.add(tag)
+        test_recipe_2.tags.add(tag)
+
+        # Attempt to get tags
+        res = self.client.get(TAGS_URL, {'assigned_only': 1})
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Check that only one tag is returned
+        self.assertEqual(len(res.data), 1)
 
     def test_update_tag_successful(self):
         """Test updating a tag with a valid payload is successful"""

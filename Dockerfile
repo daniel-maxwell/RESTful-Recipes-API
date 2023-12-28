@@ -5,13 +5,19 @@ FROM python:3.9-alpine3.13
 LABEL maintainer="Daniel White"
 
 # Print output from python directly to terminal
-ENV PYTHONBUFFERED 1
+ENV PYTHONNUNBUFFERED 1
 
 # Copy requirements.txt in to the Docker Image
 COPY ./requirements.txt /tmp/requirements.txt
 
 # Copy dev requirements in to the Docker Image
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
+
+# Copy uWSGI configuration file
+COPY ./uwsgi.ini /app/uwsgi.ini
+
+# Copy scripts directory in to the Docker Image
+COPY ./scripts /scripts
 
 # Copy app directory in to the Docker Image
 COPY ./app /app
@@ -24,20 +30,27 @@ EXPOSE 8000
 
 # Create a virtual environment, install pip and dependencies, remove temp files and create a user
 ARG DEV=false
-RUN python -m venv /py && \
+RUN apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base musl-dev zlib-dev linux-headers && \
+    python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt; \
     fi && \
+    apk del .tmp-build-deps && \
     rm -rf /tmp && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user
+        django-user && \
+    chmod -R +x /scripts
 
 # Add the virtual environment to the path environment variable
 ENV PATH="/py/bin:$PATH"
 
 # Switch to the django-user user
 USER django-user
+
+# Run the run.sh script
+CMD ["run.sh"]
