@@ -8,11 +8,11 @@ services:
       context: .
       args:
         - DEV=true
-    
+
     # expose port 8000
     ports:
       - "8000:8000"
-    
+
     # mount the app directory to the container
     volumes:
       - ./app:/app
@@ -21,3 +21,5 @@ services:
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DEBUG=1

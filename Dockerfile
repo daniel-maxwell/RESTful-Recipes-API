@@ -13,9 +13,6 @@ COPY ./requirements.txt /tmp/requirements.txt
 # Copy dev requirements in to the Docker Image
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 
-# Copy uWSGI configuration file
-COPY ./uwsgi.ini /app/uwsgi.ini
-
 # Copy scripts directory in to the Docker Image
 COPY ./scripts /scripts
 
@@ -31,7 +28,7 @@ EXPOSE 8000
 # Create a virtual environment, install pip and dependencies, remove temp files and create a user
 ARG DEV=false
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base musl-dev zlib-dev linux-headers && \
+        build-base musl-dev zlib zlib-dev linux-headers && \
     python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
@@ -43,11 +40,15 @@ RUN apk add --update --no-cache --virtual .tmp-build-deps \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user && \
-    chmod -R +x /scripts
+        django-user
 
 # Add the virtual environment to the path environment variable
-ENV PATH="/py/bin:$PATH"
+ENV PATH="/scripts:/py/bin:$PATH"
+
+# Change ownership of necessary directories to django-user
+RUN mkdir -p /app/staticfiles && \
+    chown -R django-user:django-user /app && \
+    chmod -R +x /scripts
 
 # Switch to the django-user user
 USER django-user
