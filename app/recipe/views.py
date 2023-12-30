@@ -24,14 +24,12 @@ from drf_spectacular.utils import (
             OpenApiParameter(
                 name='ingredients',
                 type=OpenApiTypes.STR,
-                description=
-                'Comma-seperated list of ingredient IDs to filter by',
+                description='Comma-seperated list of ingredient IDs',
             ),
             OpenApiParameter(
                 name='tags',
                 type=OpenApiTypes.STR,
-                description=
-                'Comma-seperated list of tag IDs to filter by',
+                description='Comma-seperated list of tag IDs',
             ),
         ],
     ),
