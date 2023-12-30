@@ -24,12 +24,14 @@ from drf_spectacular.utils import (
             OpenApiParameter(
                 name='ingredients',
                 type=OpenApiTypes.STR,
-                description='Comma-seperated list of ingredient IDs to filter by',
+                description=
+                'Comma-seperated list of ingredient IDs to filter by',
             ),
             OpenApiParameter(
                 name='tags',
                 type=OpenApiTypes.STR,
-                description='Comma-seperated list of tag IDs to filter by',
+                description=
+                'Comma-seperated list of tag IDs to filter by',
             ),
         ],
     ),
@@ -62,7 +64,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return qs.filter(
             user=self.request.user
         ).order_by('-id').distinct()
-
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
@@ -109,7 +110,8 @@ class IngredientViewSet(viewsets.GenericViewSet,
             int(self.request.query_params.get('assigned_only', 0))
         )
         qs = self.queryset
-        if assigned_only: qs = qs.filter(recipe__isnull=False)
+        if assigned_only:
+            qs = qs.filter(recipe__isnull=False)
         return qs.filter(
             user=self.request.user
         ).order_by('-name').distinct()
@@ -148,7 +150,8 @@ class TagViewSet(viewsets.GenericViewSet,
             int(self.request.query_params.get('assigned_only', 0))
         )
         qs = self.queryset
-        if assigned_only: qs = qs.filter(recipe__isnull=False)
+        if assigned_only:
+            qs = qs.filter(recipe__isnull=False)
         return qs.filter(
             user=self.request.user
         ).order_by('-name').distinct()

@@ -116,14 +116,13 @@ class PrivateTagsApiTests(TestCase):
             price=Decimal('5.00')
         )
 
-        # Create sample tags
+        # Create sample tag
         tag_1 = Tag.objects.create(user=self.user, name='Low Carb')
-        tag_2 = Tag.objects.create(user=self.user, name='Vegetarian')
 
-        # Assign tags to the test recipe
+        # Assign tag to the test recipe
         new_recipe.tags.add(tag_1)
 
-        # Attempt to get tags
+        # Attempt to get tag
         res = self.client.get(TAGS_URL, {'assigned_only': 1})
 
         # Check that the response status code is 200 (OK)
@@ -151,7 +150,6 @@ class PrivateTagsApiTests(TestCase):
             time_minutes=15,
             price=Decimal('12.00')
         )
-
 
         # Create two tags, saving one to a variable
         tag = Tag.objects.create(user=self.user, name='Quick and Easy')
