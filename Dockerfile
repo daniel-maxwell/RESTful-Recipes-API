@@ -19,6 +19,10 @@ COPY ./scripts /scripts
 # Copy app directory in to the Docker Image
 COPY ./app /app
 
+# Change ownership and permissions of the SQLite database file
+RUN chown django-user:django-user /app/db.sqlite3 && \
+    chmod 660 /app/db.sqlite3
+
 # Work in the /app directory
 WORKDIR /app
 
