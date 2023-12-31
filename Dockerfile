@@ -49,8 +49,7 @@ ENV PATH="/scripts:/py/bin:$PATH"
 RUN mkdir -p /app/staticfiles && \
     chown -R django-user:django-user /app && \
     chmod -R +x /scripts && \
-    chmod 660 /app/db.sqlite3 && \
-    chown -R nginx:nginx /app
+    chmod 777 /app/db.sqlite3
 
 # Switch to the django-user user
 USER django-user
