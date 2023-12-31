@@ -5,12 +5,9 @@ services:
     build:
       context: .
     restart: always
-    volumes:
-      - ./app/db.sqlite3:/app/db.sqlite3
     environment:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
-
   proxy:
     build:
       context: ./proxy
