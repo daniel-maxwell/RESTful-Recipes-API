@@ -29,9 +29,9 @@ USER root
 RUN touch /etc/nginx/conf.d/default.conf && \
     chown nginx:nginx /etc/nginx/conf.d/default.conf && \
     chmod 755 /run.sh && \
-    chmod 777 ./app/db.sqlite3 && \
-    chown nginx:nginx ./app/db.sqlite3
-
+    ls
+    #chmod 777 ./app/db.sqlite3 && \
+    #chown nginx:nginx ./app/db.sqlite3
 
 # Switch to the (unprivileged) nginx user
 USER nginx
