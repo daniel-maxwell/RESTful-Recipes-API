@@ -2,7 +2,6 @@ version: "3.9"
 
 services:
   app:
-    command: /bin/sh -c "chmod 777 /app/db.sqlite3"
     build:
       context: .
     restart: always
