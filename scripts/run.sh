@@ -2,8 +2,6 @@
 
 set -e
 
-sudo chmod 666 ./app/db.sqlite3
-
 python manage.py collectstatic --noinput
 python manage.py migrate
 
