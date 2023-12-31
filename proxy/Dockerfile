@@ -28,10 +28,7 @@ USER root
 # Commands to set up the image
 RUN touch /etc/nginx/conf.d/default.conf && \
     chown nginx:nginx /etc/nginx/conf.d/default.conf && \
-    chmod 755 /run.sh && \
-    ls
-    #chmod 777 ./app/db.sqlite3 && \
-    #chown nginx:nginx ./app/db.sqlite3
+    chmod 755 /run.sh
 
 # Switch to the (unprivileged) nginx user
 USER nginx

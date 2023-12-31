@@ -26,7 +26,7 @@ WORKDIR /app
 EXPOSE 8000
 
 # Create a virtual environment, install pip and dependencies, remove temp files and create a user
-ARG DEV=false
+ARG DEV=true
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
         build-base musl-dev zlib zlib-dev linux-headers && \
     python -m venv /py && \
