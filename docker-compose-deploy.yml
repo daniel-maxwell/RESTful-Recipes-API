@@ -7,7 +7,7 @@ services:
     restart: always
     volumes:
       - static-data:/vol/web
-      - sqlite-data:/app/
+      - sqlite-data:/vol/db
     environment:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}

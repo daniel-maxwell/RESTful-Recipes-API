@@ -17,7 +17,7 @@ services:
     volumes:
       - ./app:/app
       - dev-static-data:/vol/web
-      - sqlite-data:/app/db.sqlite3
+      - sqlite-data:/vol/db
 
     # migrate and run server
     command: >
