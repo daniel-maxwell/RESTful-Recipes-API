@@ -1,4 +1,4 @@
-# Set the base image to Ubuntu (unprivileged)
+# Set the base image to Ubuntu (unprivileged) (FROM nginx gives nginx root privileges)
 FROM nginxinc/nginx-unprivileged:1-alpine
 
 # Set maintainer (me)
@@ -19,16 +19,21 @@ ENV LISTEN_PORT=8000
 # Set the app host to app
 ENV APP_HOST=app
 
-# Set the app port to 8000
+# Set the app port to 9000
 ENV APP_PORT=9000
 
 # Switch to the root user for setup
 USER root
 
 # Commands to set up the image
-RUN touch /etc/nginx/conf.d/default.conf && \
+RUN mkdir -p /vol/static && \
+    chmod 755 /vol/static && \
+    touch /etc/nginx/conf.d/default.conf && \
     chown nginx:nginx /etc/nginx/conf.d/default.conf && \
-    chmod 755 /run.sh
+    chmod +x /run.sh
+
+# Set up a volume for the static files
+VOLUME /vol/static
 
 # Switch to the (unprivileged) nginx user
 USER nginx

@@ -16,6 +16,8 @@ services:
     # mount the app directory to the container
     volumes:
       - ./app:/app
+      - dev-static-data:/vol/web
+      - sqlite-data:/app/
 
     # migrate and run server
     command: >
@@ -23,3 +25,7 @@ services:
              python manage.py runserver 0.0.0.0:8000"
     environment:
       - DEBUG=1
+
+volumes:
+  dev-static-data:
+  sqlite-data:

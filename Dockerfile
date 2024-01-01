@@ -26,30 +26,29 @@ WORKDIR /app
 EXPOSE 8000
 
 # Create a virtual environment, install pip and dependencies, remove temp files and create a user
-ARG DEV=true
-RUN apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base musl-dev zlib zlib-dev linux-headers && \
-    python -m venv /py && \
+ARG DEV=false
+RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base musl-dev zlib zlib-dev linux-headers && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
-        then /py/bin/pip install -r /tmp/requirements.dev.txt; \
+        then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
-    apk del .tmp-build-deps && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --no-create-home \
-        django-user
+        django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol && \
+    chmod -R +x /scripts
 
 # Add the virtual environment to the path environment variable
 ENV PATH="/scripts:/py/bin:$PATH"
-
-# Change ownership of necessary directories to django-user
-RUN mkdir -p /app/staticfiles && \
-    chown -R django-user:django-user /app && \
-    chmod -R +x /scripts && \
-    chmod 777 /app/db.sqlite3
 
 # Switch to the django-user user
 USER django-user

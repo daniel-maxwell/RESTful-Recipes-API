@@ -5,11 +5,13 @@ services:
     build:
       context: .
     restart: always
+    volumes:
+      - static-data:/vol/web
+      - sqlite-data:/app/
     environment:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
-    volumes:
-      - ./app:/app
+
   proxy:
     build:
       context: ./proxy
@@ -18,3 +20,9 @@ services:
       - app
     ports:
       - 80:8000
+    volumes:
+      - static-data:/vol/static
+
+volumes:
+  static-data:
+  sqlite-data:
