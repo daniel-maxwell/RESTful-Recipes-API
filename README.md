@@ -1,7 +1,8 @@
-# Welcome to my Recipes REST API
+# Recipes REST API
 This project is fully functioning REST API which allows users to create, read, update and delete recipes. Additionally, users may create and add tags to recipes, and filter recipes by ingredients and/or tags. The project features a full user account creation and authentication system, with passwords stored as a SHA-256 hash in the database.
 
-**Access the deployed project here:** http://ec2-51-20-1-67.eu-north-1.compute.amazonaws.com/api/docs/
+### Access the deployed project here: 
+http://ec2-51-20-1-67.eu-north-1.compute.amazonaws.com/api/docs/
 <br><br>
 ## Features
 - Users can create and sign in/out of their account using an e-mail address and securely stored password. Recipes, tags, and ingredients created by a user are assigned to their user ID.
