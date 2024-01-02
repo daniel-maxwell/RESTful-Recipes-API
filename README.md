@@ -12,14 +12,17 @@ Access the deployed project here: http://ec2-51-20-1-67.eu-north-1.compute.amazo
 
 ## Architecture Overview
 <br>
+
 ### Deployment
 The project is containerized using Docker and deployed on a single AWS EC2 VPS.
 ![image](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/c0a0a3ad-dc80-4082-b751-2bbbc5d6160d)
 <br>
+
 ### Basic Components
 The Django app is executed using a uWSGI web server gateway interface. Persistant data (sqlite data, static files) are stored in Docker volumes. A reverse proxy Nginx server handles requests in to the application.
 ![Overview](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/a59a2f01-3f0d-49bd-a974-d70ef2262c21)
 <br>
+
 ### Docker Compose Setup
 Depending on ther URL of the request, the Nginx reverse proxy service handles things differently. Static files such as CSS, JavaScript and front-end elements are served directly from the static data volume, increasing efficiency and loading times. All other requests are routed in to the uWSGI server that runs the application.
 ![Docker Compose setup](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/b929ed47-590b-4a65-9a36-afb42390eb25)
