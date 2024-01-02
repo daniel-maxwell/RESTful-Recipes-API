@@ -1,7 +1,7 @@
 # Welcome to my Recipes REST API
 This project is fully functioning REST API which allows users to create, read, update and delete recipes. Additionally, users may create and add tags to recipes, and filter recipes by ingredients and/or tags. The project features a full user account creation and authentication system, with passwords stored as a SHA-256 hash in the database.
 
-Access the deployed project here: http://ec2-51-20-1-67.eu-north-1.compute.amazonaws.com/api/docs/
+**Access the deployed project here:* http://ec2-51-20-1-67.eu-north-1.compute.amazonaws.com/api/docs/
 <br><br>
 ## Features
 - Users can create and sign in/out of their account using an e-mail address and securely stored password. Recipes, tags, and ingredients created by a user are assigned to their user ID.
@@ -12,19 +12,19 @@ Access the deployed project here: http://ec2-51-20-1-67.eu-north-1.compute.amazo
 
 ## Architecture Overview
 <br>
-
 ### Deployment
 The project is containerized using Docker and deployed on a single AWS EC2 VPS.
-![image](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/c0a0a3ad-dc80-4082-b751-2bbbc5d6160d)
 <br>
-
+![image](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/c0a0a3ad-dc80-4082-b751-2bbbc5d6160d)
+<br><br>
 ### Basic Components
 The Django app is executed using a uWSGI web server gateway interface. Persistant data (sqlite data, static files) are stored in Docker volumes. A reverse proxy Nginx server handles requests in to the application.
-![Overview](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/a59a2f01-3f0d-49bd-a974-d70ef2262c21)
 <br>
-
+![Overview](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/a59a2f01-3f0d-49bd-a974-d70ef2262c21)
+<br><br>
 ### Docker Compose Setup
 Depending on ther URL of the request, the Nginx reverse proxy service handles things differently. Static files such as CSS, JavaScript and front-end elements are served directly from the static data volume, increasing efficiency and loading times. All other requests are routed in to the uWSGI server that runs the application.
+<br>
 ![Docker Compose setup](https://github.com/daniel-maxwell/RESTful-Recipes-API/assets/66431847/b929ed47-590b-4a65-9a36-afb42390eb25)
 <br><br>
 
@@ -34,7 +34,7 @@ Depending on ther URL of the request, the Nginx reverse proxy service handles th
 - The database used is Sqlite 3, with an intention to migrate over to Postgres in the future.
 - The project is containerized using Docker, and uses an Nginx reverse proxy to handle requests between the client(s), app, and static data volumes.
 - The project was created using the Test-Driven-Development software design philosophy, which is realised with an extensive unit testing suite, flake8 linter to enforce PEP-8 conformity, and the use of Github Actions to create a CI/CD pipeline.
-<br><br><br>
+<br><br>
 
 Author
 ======
