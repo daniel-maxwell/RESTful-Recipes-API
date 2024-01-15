@@ -6,8 +6,8 @@ http://ec2-51-20-1-67.eu-north-1.compute.amazonaws.com/api/docs/
 <br><br>
 ## Features
 - Users can create and sign in/out of their account using an e-mail address and securely stored password. Recipes, tags, and ingredients created by a user are assigned to their user ID.
-- Users can create (POST), retreive (GET), full update (PUT), partial update (PATCH) or delete (DELETE) recipes, tags or ingredients using the Swagger UI, by submitting a valid request to any of the API endpoints, which requires filling form fields or submitting a valid JSON body. The UI provides hints and feedback to assist the user in making a valid request to any of the endpoints.
-- Users have the option to retreive a filtered list of recipes by passing in a comma-seperated list of ingredient and/or tag IDs.
+- Users can create (POST), retrieve (GET), full update (PUT), partial update (PATCH) or delete (DELETE) recipes, tags or ingredients using the Swagger UI, by submitting a valid request to any of the API endpoints, which requires filling form fields or submitting a valid JSON body. The UI provides hints and feedback to assist the user in making a valid request to any of the endpoints.
+- Users have the option to retrieve a filtered list of recipes by passing in a comma-seperated list of ingredient and/or tag IDs.
 <br><br>
 
 
